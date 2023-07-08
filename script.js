@@ -1,13 +1,14 @@
 var cols, rows;
-var w = 40;
+var w = 25;
 var grid = [];
 var current;
+var visited = 0;
 
 var stack = [];
 
 function setup() {
-    createCanvas(400,400);
-    frameRate(5);
+    createCanvas(500,500);
+    frameRate(60);
     cols = floor(width / w);
     rows = floor(height / w);
 
@@ -22,21 +23,28 @@ function setup() {
 }
 
 function draw() {
-    background(44, 47, 51);
+    background(2,0,2);
 
     for(var i = 0; i < grid.length; i++) {
         grid[i].show();
     }
-
-    current.visited = true;
-    var next = current.checkNeighbours();
-    if(next) {
-        stack.push(current);
-        next.visited = true;
-        removeWall(current, next);
-        current = next;
-    } else if(stack.length > 0) {
-        current = stack.pop();
+    if(visited === cols * rows)
+        return;
+    current.highlight();
+    if(current.visited == false)
+        visited++;
+    else
+        current.backtraced = true;
+        
+        current.visited = true;
+        var next = current.checkNeighbours();
+        if(next) {
+            stack.push(current);
+            removeWall(current, next);
+            current = next;
+        } else if(stack.length > 0) {
+            current.backtraced = true;
+            current = stack.pop();
     }
     // in the else condition is where the backtracing happens. i push onto a stack the current pos each time i go forward. i pop the top
     // of the stack and go there to backtrace.
@@ -74,12 +82,21 @@ function Cell(i, j) {
     this.j = j;
     this.walls = [true, true, true, true]; //top right bottom left
     this.visited = false; 
+    this.backtraced = false;
+
+    this.highlight = function() {
+        var x = this.i * w;
+        var y = this.j * w;
+        noStroke();
+        fill(0,202,0);
+        rect(x, y, w, w);
+    }
 
     this.show = function() {
         var x = this.i * w;
         var y = this.j * w;
-        stroke(35, 39, 42);
-        strokeWeight(1);
+        stroke(114,113,114);
+        strokeWeight(2);
         if(this.walls[0]) {
             line(x,y,x + w, y);
         }
@@ -94,7 +111,7 @@ function Cell(i, j) {
         }
         if(this.visited) {
             noStroke();
-            fill(114, 137, 218);
+            fill(47,6,48);
             rect(x, y, w, w);
         }
         // we need a function which checks if cells nearby have been visited.
