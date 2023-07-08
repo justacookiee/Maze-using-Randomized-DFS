@@ -30,6 +30,7 @@ function draw() {
     var next = current.checkNeighbours();
     if(next) {
         next.visited = true;
+        removeWall(current, next);
         current = next;
     }
 }
@@ -39,6 +40,28 @@ function index(i, j) {
         return -1;
     return i + j * cols;
 }
+
+function removeWall(current, next) {
+    var i = current.i - next.i;
+    var j = current.j - next.j;
+    if(i === 0 && j === 1) {
+        current.walls[0] = false;
+        next.walls[2] = false;
+    }
+    if(i === -1 && j === 0) {
+        current.walls[1] = false;
+        next.walls[3] = false;
+    }
+    if(i === 0 && j === -1) {
+        current.walls[2] = false;
+        next.walls[0] = false;
+    }
+    if(i === 1 && j === 0) {
+        current.walls[3] = false;
+        next.walls[1] = false;
+    }
+}
+
 function Cell(i, j) {
     this.i = i;
     this.j = j;
@@ -49,6 +72,7 @@ function Cell(i, j) {
         var x = this.i * w;
         var y = this.j * w;
         stroke(35, 39, 42);
+        strokeWeight(1);
         if(this.walls[0]) {
             line(x,y,x + w, y);
         }
