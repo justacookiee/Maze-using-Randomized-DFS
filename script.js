@@ -3,6 +3,8 @@ var w = 40;
 var grid = [];
 var current;
 
+var stack = [];
+
 function setup() {
     createCanvas(400,400);
     frameRate(5);
@@ -29,10 +31,15 @@ function draw() {
     current.visited = true;
     var next = current.checkNeighbours();
     if(next) {
+        stack.push(current);
         next.visited = true;
         removeWall(current, next);
         current = next;
+    } else if(stack.length > 0) {
+        current = stack.pop();
     }
+    // in the else condition is where the backtracing happens. i push onto a stack the current pos each time i go forward. i pop the top
+    // of the stack and go there to backtrace.
 }
 
 function index(i, j) {
